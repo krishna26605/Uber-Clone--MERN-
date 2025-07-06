@@ -271,7 +271,7 @@ curl -X GET http://localhost:4000/users/logout \
   -H "Authorization: Bearer <jwt_token>"
 
 
-  # Captain API Documentation
+# Captain API Documentation
 
 ## Captain Registration
 
@@ -281,11 +281,9 @@ curl -X GET http://localhost:4000/users/logout \
 
 ### Description
 
-This endpoint allows a new captain (driver) to register by providing their personal details and vehicle information. The password is securely hashed before storing in the database. On successful registration, a JWT token and the captain object are returned.
+Register a new captain (driver) by providing personal and vehicle details. Returns a JWT token and the captain object on success.
 
 ### Request Body
-
-Send a JSON object with the following structure:
 
 ```json
 {
@@ -308,7 +306,7 @@ Send a JSON object with the following structure:
 
 - `fullname.firstname` (string, required, min 3 chars)
 - `fullname.lastname` (string, required, min 3 chars)
-- `email` (string, required, valid email format)
+- `email` (string, required, valid email)
 - `password` (string, required, min 6 chars)
 - `vehicle.color` (string, required, min 3 chars)
 - `vehicle.plate` (string, required, min 3 chars)
@@ -337,7 +335,6 @@ Send a JSON object with the following structure:
         "capacity": 4,
         "vehicleType": "car"
       }
-      // other captain fields
     }
   }
   ```
@@ -368,18 +365,169 @@ Send a JSON object with the following structure:
   }
   ```
 
-### Example Request
+---
 
-```bash
-curl -X POST http://localhost:4000/captain/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullname": { "firstname": "Jane", "lastname": "Smith" },
-    "email": "jane.smith@example.com",
-    "password": "yourpassword",
-    "vehicle": {
-      "color": "Red",
-      "plate": "ABC123",
-      "capacity": 4,
-      "vehicleType": "car"
+## Captain Login
+
+### Endpoint
+
+`POST /captain/login`
+
+### Description
+
+Login as a captain using email and password. Returns a JWT token and the captain object on success.
+
+### Request Body
+
+```json
+{
+  "email": "jane.smith@example.com",
+  "password": "yourpassword"
+}
+```
+
+#### Field Requirements
+
+- `email` (string, required, valid email)
+- `password` (string, required, min 6 chars)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "captain": {
+      "_id": "<captain_id>",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Smith"
+      },
+      "email": "jane.smith@example.com",
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
     }
+  }
+  ```
+
+#### Validation Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "field",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### Invalid Credentials
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "error": "Invalid email or password"
+  }
+  ```
+
+---
+
+## Get Captain Profile
+
+### Endpoint
+
+`GET /captain/profile`
+
+### Description
+
+Returns the profile information of the currently authenticated captain. Requires a valid JWT token.
+
+### Authentication
+
+- **Required:** Yes (JWT token in cookie or `Authorization` header)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "captain": {
+      "_id": "<captain_id>",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Smith"
+      },
+      "email": "jane.smith@example.com",
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+    }
+  }
+  ```
+
+#### Unauthorized
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access...!"
+  }
+  ```
+
+---
+
+## Captain Logout
+
+### Endpoint
+
+`GET /captain/logout`
+
+### Description
+
+Logs out the currently authenticated captain by blacklisting their JWT token and clearing the authentication cookie.
+
+### Authentication
+
+- **Required:** Yes (JWT token in cookie or `Authorization` header)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+#### Unauthorized
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access...!"
+  }
+  ```
