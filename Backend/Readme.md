@@ -45,7 +45,7 @@ Send a JSON object with the following structure:
         "firstname": "John",
         "lastname": "Doe"
       },
-      "email": "john.doe@example.com",
+      "email": "john.doe@example.com"
       // other user fields
     }
   }
@@ -87,9 +87,11 @@ curl -X POST http://localhost:4000/users/register \
     "email": "john.doe@example.com",
     "password": "yourpassword"
   }'
+```
 
+---
 
-  ## User Login
+## User Login
 
 ### Endpoint
 
@@ -170,3 +172,100 @@ curl -X POST http://localhost:4000/users/login \
   -d '{
     "email": "john.doe@example.com",
     "password": "yourpassword"
+  }'
+```
+
+---
+
+## Get User Profile
+
+### Endpoint
+
+`GET /users/profile`
+
+### Description
+
+This endpoint returns the profile information of the currently authenticated user. The request must include a valid JWT token in the `Authorization` header or as a cookie.
+
+### Authentication
+
+- **Required:** Yes (JWT token)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "_id": "<user_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+    // other user fields
+  }
+  ```
+
+#### Unauthorized
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access...!"
+  }
+  ```
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:4000/users/profile \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+## User Logout
+
+### Endpoint
+
+`GET /users/logout`
+
+### Description
+
+This endpoint logs out the currently authenticated user by blacklisting their JWT token and clearing the authentication cookie.
+
+### Authentication
+
+- **Required:** Yes (JWT token)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "message": "User logged out successfully...!"
+  }
+  ```
+
+#### Unauthorized
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "message": "Unauthorized access...!"
+  }
+  ```
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:4000/users/logout \
+  -H "Authorization: Bearer <jwt_token>"
