@@ -269,3 +269,117 @@ This endpoint logs out the currently authenticated user by blacklisting their JW
 ```bash
 curl -X GET http://localhost:4000/users/logout \
   -H "Authorization: Bearer <jwt_token>"
+
+
+  # Captain API Documentation
+
+## Captain Registration
+
+### Endpoint
+
+`POST /captain/register`
+
+### Description
+
+This endpoint allows a new captain (driver) to register by providing their personal details and vehicle information. The password is securely hashed before storing in the database. On successful registration, a JWT token and the captain object are returned.
+
+### Request Body
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane.smith@example.com",
+  "password": "yourpassword",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": 4,
+    "vehicleType": "car"
+  }
+}
+```
+
+#### Field Requirements
+
+- `fullname.firstname` (string, required, min 3 chars)
+- `fullname.lastname` (string, required, min 3 chars)
+- `email` (string, required, valid email format)
+- `password` (string, required, min 6 chars)
+- `vehicle.color` (string, required, min 3 chars)
+- `vehicle.plate` (string, required, min 3 chars)
+- `vehicle.capacity` (integer, required, min 1)
+- `vehicle.vehicleType` (string, required, one of: `car`, `motorcycle`, `auto`)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `201 Created`
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "captain": {
+      "_id": "<captain_id>",
+      "fullname": {
+        "firstname": "Jane",
+        "lastname": "Smith"
+      },
+      "email": "jane.smith@example.com",
+      "vehicle": {
+        "color": "Red",
+        "plate": "ABC123",
+        "capacity": 4,
+        "vehicleType": "car"
+      }
+      // other captain fields
+    }
+  }
+  ```
+
+#### Validation Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "field",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### Missing Fields
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "message": "All fields are required"
+  }
+  ```
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:4000/captain/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": { "firstname": "Jane", "lastname": "Smith" },
+    "email": "jane.smith@example.com",
+    "password": "yourpassword",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": 4,
+      "vehicleType": "car"
+    }
