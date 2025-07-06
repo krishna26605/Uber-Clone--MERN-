@@ -87,3 +87,86 @@ curl -X POST http://localhost:4000/users/register \
     "email": "john.doe@example.com",
     "password": "yourpassword"
   }'
+
+
+  ## User Login
+
+### Endpoint
+
+`POST /users/login`
+
+### Description
+
+This endpoint allows an existing user to log in using their email and password. If the credentials are valid, a JWT token and the user object are returned.
+
+### Request Body
+
+Send a JSON object with the following structure:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
+```
+
+#### Field Requirements
+
+- `email` (string, required, valid email format)
+- `password` (string, required, min 6 chars)
+
+### Responses
+
+#### Success
+
+- **Status Code:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "user": {
+      "_id": "<user_id>",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com"
+      // other user fields
+    }
+  }
+  ```
+
+#### Validation Error
+
+- **Status Code:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Error message",
+        "param": "field",
+        "location": "body"
+      }
+    ]
+  }
+  ```
+
+#### Invalid Credentials
+
+- **Status Code:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "message": "Invalid email or password...!"
+  }
+  ```
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:4000/users/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "yourpassword"
