@@ -39,7 +39,7 @@ const UserLogin = () => {
   return (
     <div className='p-7 h-screen flex flex-col justify-between'>
         <div>
-                        <img className='w-16 mb-10 ' src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png" alt="" />
+             <img className='w-16 mb-10 ' src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png" alt="" />
 
 
 
