@@ -20,7 +20,7 @@ const UserLogout = () => {
     })
 
   return (
-    <div>UserLogout</div>
+    <div>UserLogout..!!</div>
   )
 }
 

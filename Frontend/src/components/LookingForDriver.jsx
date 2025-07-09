@@ -4,7 +4,7 @@ const LookingForDriver = (props) => {
   return (
     <div>
         <h5 className='p-1 text-center w-[93%] absolute  top-0 ' onClick={()=>{
-            props.setVehiclePanel(false)
+            props.setVehicleFound(false)
           }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
           <h3 className='text-2xl font-semibold mb-5'>Looking For Driver</h3>
 
@@ -12,6 +12,8 @@ const LookingForDriver = (props) => {
 
             <img className='h-20' src="https://i.pinimg.com/736x/a7/44/bb/a744bb6640c985cf72395ae7c61f3eed.jpg" alt="" />
                 <div className='w-full mt-5'>
+
+
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="ri-map-pin-user-fill"></i>
                         <div>
@@ -19,6 +21,8 @@ const LookingForDriver = (props) => {
                             <p className='text-sm -mt-1 text-gray-600'>Dwarka Circle , Nashik</p>
                         </div>
                     </div>
+
+
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="text-lg ri-map-pin-fill"></i>
                         <div>
@@ -26,6 +30,8 @@ const LookingForDriver = (props) => {
                             <p className='text-sm -mt-1 text-gray-600'>Dwarka Circle , Nashik</p>
                         </div>
                     </div>
+
+
                     <div className='flex items-center gap-5 p-3'>
                         <i className="ri-currency-line"></i>
                         <div>

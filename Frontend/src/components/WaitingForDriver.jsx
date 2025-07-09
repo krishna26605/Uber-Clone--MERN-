@@ -4,8 +4,10 @@ const WaitingForDriver = (props) => {
   return (
     <div>
         <h5 className='p-1 text-center w-[93%] absolute  top-0 ' onClick={()=>{
-            props.waitingForDriver(false)
+            props.setWaitingForDriver(false)
           }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
+            
+            {/* Driver Info Section */}
             <div className= 'flex items-center justify-between'>
                 <img className='h-12' src="https://i.pinimg.com/736x/a7/44/bb/a744bb6640c985cf72395ae7c61f3eed.jpg" alt="" />
                 <div className='text-right'>

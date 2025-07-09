@@ -24,8 +24,9 @@ const Home = () => {
   const confirmedRidePanelRef = useRef(null)
   const [vehicleFound, setVehicleFound] = useState(false)
   const vehicleFoundRef = useRef(null)
-  const waitingForDriverRef = useRef(null)
+  
   const [waitingForDriver, setWaitingForDriver] = useState(false)
+  const waitingForDriverRef = useRef(null)
 
 
 
@@ -119,6 +120,8 @@ const Home = () => {
         <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
       </div>
 
+
+       
       <div className=' flex flex-col justify-end h-screen absolute top-0 w-full '>
         <div className='h-[30%] p-6 bg-white relative'>
           <h5 ref={panelCloseRef} onClick={()=>{
@@ -175,11 +178,11 @@ const Home = () => {
       </div>
 
       <div ref={waitingForDriverRef}   className='fixed w-full z-10 bottom-0   px-3 bg-white py-6 pt-12'>
-            <WaitingForDriver waitingForDriver={waitingForDriver}  />
+            <waitingForDriver setwaitingForDriver={setWaitingForDriver}  />
       </div>
 
       
-
+x
 
 
     </div>
