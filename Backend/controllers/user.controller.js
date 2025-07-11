@@ -6,10 +6,13 @@ const blacklistTokenModel = require('../models/blacklistToken.model.js');
 
 
 module.exports.registerUser = async (req, res , next) => {
+
+    console.log("✅ Raw req.body:", req.body);
     
     
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log("❌ Validation errors:", errors.array()); 
         return res.status(400).json({errors: errors.array() });
     }
 

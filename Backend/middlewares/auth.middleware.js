@@ -16,12 +16,16 @@ module.exports.authUser = async (req , res , next) => {
     const isBlacklisted = await userModel.findOne({token: token});
 
     if(isBlacklisted) {
-        res.status(401).json({message: 'Token is blacklisted...!'});
+        return res.status(401).json({message: 'Token is blacklisted...!'});
     }
 
     try {
         const decoded = jwt.verify(token , process.env.JWT_SECRET);
         const user = await userModel.findById(decoded._id)
+
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
 
         req.user = user;
         return next();
@@ -46,6 +50,7 @@ module.exports.authCaptain = async (req , res , next) => {
     try {
         const decoded = jwt.verify(token , process.env.JWT_SECRET);
         const captain = await captainModel.findById(decoded._id)
+        
 
         req.captain = captain;
         return next();
