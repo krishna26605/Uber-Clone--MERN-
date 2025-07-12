@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { Link , useNavigate } from 'react-router-dom'
-import axios from 'axios';
+import { userService } from '../services/userService';
 import { UserDataContext } from '../context/UserContext.jsx';
 
 const UserSignup = () => {
@@ -9,7 +9,8 @@ const UserSignup = () => {
     const [password , setPassword] = useState('');
     const [firstName , setFirstName] = useState('');
     const [lastName , setLastName] = useState('');
-    const [userData, setUserData] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const navigate = useNavigate();
 
@@ -18,30 +19,33 @@ const UserSignup = () => {
 
     const submitHandler = async (e)=> {
         e.preventDefault();
-        const newUser = {
-            fullname: {
-                firstname: firstName,
-                lastname: lastName
-            },
-            email: email,
-            password: password
-        }
+        setLoading(true);
+        setError('');
 
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser); 
+        try {
+            const newUser = {
+                fullname: {
+                    firstname: firstName,
+                    lastname: lastName
+                },
+                email: email,
+                password: password
+            }
 
-        if(response.status === 201){
-            const data = response.data;
-
+            const data = await userService.register(newUser);
             setUser(data.user)
             localStorage.setItem('token', data.token);
-
             navigate('/home'); 
-        }
 
-        setEmail('');
-        setFirstName('');
-        setLastName('');
-        setPassword('');
+            setEmail('');
+            setFirstName('');
+            setLastName('');
+            setPassword('');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Registration failed');
+        } finally {
+            setLoading(false);
+        }
     }
 
 
@@ -115,9 +119,14 @@ const UserSignup = () => {
 
 
                 <button
-                className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-base placeholder:text-sm'>
-                    Create Account
+                disabled={loading}
+                className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-base placeholder:text-sm disabled:opacity-50'>
+                    {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
+                
+                {error && (
+                    <p className='text-red-500 text-sm mb-3'>{error}</p>
+                )}
                 
             
             </form>

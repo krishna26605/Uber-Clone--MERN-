@@ -2,11 +2,13 @@ import React, { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { UserDataContext } from '../context/UserContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { userService } from '../services/userService';
 
 const UserLogin = () => {
     const [email , setEmail] = useState('');
     const [password , setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const [userData, setUserData] = useState({})
 
@@ -16,24 +18,27 @@ const UserLogin = () => {
 
     const submitHandler = async (e)=> {
         e.preventDefault()
+        setLoading(true);
+        setError('');
         
-        const userData = {
-            email: email,
-            password: password
-        }
+        try {
+            const userData = {
+                email: email,
+                password: password
+            }
 
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData);
-
-        if(response.status === 200){
-            const data = response.data;
+            const data = await userService.login(userData);
             setUser(data.user);
             localStorage.setItem('token', data.token);
             navigate('/home');
+
+            setEmail('');
+            setPassword('');
+        } catch (error) {
+            setError(error.response?.data?.message || 'Login failed');
+        } finally {
+            setLoading(false);
         }
-
-
-        setEmail('');
-        setPassword('');
     }
     
   return (
@@ -76,9 +81,14 @@ const UserLogin = () => {
 
 
             <button
-            className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base'>
-                Login
+            disabled={loading}
+            className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base disabled:opacity-50'>
+                {loading ? 'Logging in...' : 'Login'}
             </button>
+            
+            {error && (
+                <p className='text-red-500 text-sm mb-3'>{error}</p>
+            )}
             
            
         </form>

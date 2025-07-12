@@ -1,7 +1,7 @@
 import React, {useContext , useEffect, useState } from 'react'
 import { CaptainDataContext } from '../context/CaptainContext.jsx'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { captainService } from '../services/captainService'
 
 const CaptainProtectWrapper = ({
     children
@@ -18,24 +18,25 @@ const CaptainProtectWrapper = ({
     useEffect(()=>{
         if(!token){
         navigate('/captain-login');
+        return;
         }
+
+
+        
+        const fetchProfile = async () => {
+            try {
+                const captainData = await captainService.getProfile();
+                setCaptain(captainData.captain);
+                setIsLoading(false);
+            } catch (err) {
+                console.log(err)
+                localStorage.removeItem('token');
+                navigate('/captain-login');
+            }
+        };
+        
+        fetchProfile();
     }, [token])
-
-
-    axios.get(`${import.meta.env.VITE_BASE_URL}/captains/profile`,{
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    }).then((response)=>{
-        if(response.status === 200){
-            setCaptain(response.data.captain);
-            setIsLoading(false);
-        }
-    }).catch((err)=>{
-        console.log(err)
-        localStorage.removeItem('token');
-        navigate('/captain-login');
-    })
     
        
 

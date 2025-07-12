@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext.jsx'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { captainService } from '../services/captainService'
 
 const CaptainSignup = () => {
 
@@ -19,6 +19,8 @@ const CaptainSignup = () => {
         const [vehiclePlate, setVehiclePlate] = useState('');
         const [vehicleCapacity, setVehicleCapacity] = useState('');
         const [vehicleType, setVehicleType] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState('');
 
 
         const {captain , setCaptain} = React.useContext(CaptainDataContext);
@@ -26,39 +28,43 @@ const CaptainSignup = () => {
     
         const submitHandler = async (e)=> {
             e.preventDefault();
-            const captainData ={
-                fullname: {
-                    firstname: firstName,
-                    lastname: lastName
-                },
-                email: email,
-                password: password,
-                vehicle: {
-                    color: vehicleColor,
-                    plate: vehiclePlate,
-                    capacity: vehicleCapacity,
-                    vehicleType: vehicleType
+            setLoading(true);
+            setError('');
+
+            try {
+                const captainData ={
+                    fullname: {
+                        firstname: firstName,
+                        lastname: lastName
+                    },
+                    email: email,
+                    password: password,
+                    vehicle: {
+                        color: vehicleColor,
+                        plate: vehiclePlate,
+                        capacity: vehicleCapacity,
+                        vehicleType: vehicleType
+                    }
                 }
-            }
 
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData)
-
-            if(response.status === 201){
-                const data = response.data;
+                const data = await captainService.register(captainData);
                 setCaptain(data.captain);
                 localStorage.setItem('token', data.token);
-                
                 navigate('/captain-home');
+
+                setEmail('');
+                setFirstName('');
+                setLastName('');
+                setPassword('');
+                setVehicleColor('');
+                setVehiclePlate('');
+                setVehicleCapacity('');
+                setVehicleType('');
+            } catch (error) {
+                setError(error.response?.data?.message || 'Registration failed');
+            } finally {
+                setLoading(false);
             }
-    
-            setEmail('');
-            setFirstName('');
-            setLastName('');
-            setPassword('');
-            setVehicleColor('');
-            setVehiclePlate('');
-            setVehicleCapacity('');
-            setVehicleType('');
         }
     
 
@@ -168,16 +174,21 @@ const CaptainSignup = () => {
                         <option value="" disabled>Select Vehicle Type</option>
                         <option value="car">Car</option>
                         <option value="auto">Auto</option>
-                        <option value="moto">Moto</option>
+                        <option value="motorcycle">Motorcycle</option>
                     </select>
                 </div>
                 
 
 
                 <button
-                className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-base placeholder:text-sm'>
-                    Create Captain's Account
+                disabled={loading}
+                className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-base placeholder:text-sm disabled:opacity-50'>
+                    {loading ? 'Creating Account...' : 'Create Captain\'s Account'}
                 </button>
+                
+                {error && (
+                    <p className='text-red-500 text-sm mb-3'>{error}</p>
+                )}
                 
             
             </form>

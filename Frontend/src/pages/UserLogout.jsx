@@ -1,19 +1,33 @@
 import React  from 'react'
-import axios from 'axios'
+import { userService } from '../services/userService'
 import { useNavigate } from 'react-router-dom'
 
 
 const UserLogout = () => {
 
-    const token = localStorage.getItem('token');
     const navigate = useNavigate();
 
-    axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`, {
-        headers:{
-            Authorization: `Bearer ${token}`
-        }
-    }).then((response)=>{
-        if(response.status === 200){
+    React.useEffect(() => {
+        const logout = async () => {
+            try {
+                await userService.logout();
+            } catch (error) {
+                console.log('Logout error:', error);
+            } finally {
+                localStorage.removeItem('token');
+                navigate('/login');
+            }
+        };
+        
+        logout();
+    }, [navigate]);
+
+    return (
+        <div>Logging out...</div>
+    )
+}
+
+export default UserLogout
             localStorage.removeItem('token');
             navigate('/login');
         }

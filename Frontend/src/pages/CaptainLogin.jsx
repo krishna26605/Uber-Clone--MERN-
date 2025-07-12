@@ -2,13 +2,15 @@ import React from 'react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { captainService } from '../services/captainService'
 import { CaptainDataContext } from '../context/CaptainContext.jsx'
 
 const CaptainLogin = () => {
 
     const [email , setEmail] = useState('');
     const [password , setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const {captain , setCaptain} = React.useContext(CaptainDataContext);
     const navigate = useNavigate();
@@ -16,21 +18,27 @@ const CaptainLogin = () => {
     
         const submitHandler = async (e)=> {
             e.preventDefault()
-            const captain = {
-                email: email,
-                password: password
-            };
+            setLoading(true);
+            setError('');
 
-            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain);
+            try {
+                const captainData = {
+                    email: email,
+                    password: password
+                };
 
-            if (response.status === 200){
-                const data = response.data;
+                const data = await captainService.login(captainData);
                 setCaptain(data.captain);
                 localStorage.setItem('token', data.token);
                 navigate('/captain-home');
+                
+                setEmail('');
+                setPassword('');
+            } catch (error) {
+                setError(error.response?.data?.message || 'Login failed');
+            } finally {
+                setLoading(false);
             }
-            setEmail('');
-            setPassword('');
         }
   return (
     <div className='p-7 h-screen flex flex-col justify-between'>
@@ -72,9 +80,14 @@ const CaptainLogin = () => {
 
 
             <button
-            className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base'>
-                Login
+            disabled={loading}
+            className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder:text-base disabled:opacity-50'>
+                {loading ? 'Logging in...' : 'Login'}
             </button>
+            
+            {error && (
+                <p className='text-red-500 text-sm mb-3'>{error}</p>
+            )}
             
            
         </form>
