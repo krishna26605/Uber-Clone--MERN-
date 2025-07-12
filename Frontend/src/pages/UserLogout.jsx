@@ -28,14 +28,3 @@ const UserLogout = () => {
 }
 
 export default UserLogout
-            localStorage.removeItem('token');
-            navigate('/login');
-        }
-    })
-
-  return (
-    <div>UserLogout..!!</div>
-  )
-}
-
-export default UserLogout
